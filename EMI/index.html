@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+      padding-top: 25px;
+    }
+    #container{
+        display: flex;
+        justify-content: space-between;
+        width: 70%;
+    }
+
+    #calculator {
+      background-color:#fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      
+    }
+
+    label {
+      margin-top: 10px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px 0 15px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      width: 20%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    canvas {
+      height: 100x;
+      width: 100px;
+      
+    }
+    #piechart{
+        display: inline-block;
+        vertical-align: top;
+        height: 100px;
+        width: 100px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>EMI Calculator with Pie Chart</title>
+</head>
+<body>
+<div id="container">
+<div id="calculator">
+  <label for="loanAmount">Loan Amount:</label>
+  <input type="number" id="loanAmount" placeholder="Enter loan amount">
+
+  <label for="interestRate">Interest Rate (%):</label>
+  <input type="number" id="interestRate" placeholder="Enter interest rate">
+
+  <label>Tenure:</label>
+  <input type="radio" name="tenure" id="tenureYears" checked>
+  <label for="tenureYears">Years</label>
+  <input type="radio" name="tenure" id="tenureMonths">
+  <label for="tenureMonths">Months</label>
+
+  <label for="loanTenure">Loan Tenure:</label>
+  <input type="number" id="loanTenure" placeholder="Enter loan tenure">
+
+  <button onclick="calculateEMI()">Calculate EMI</button>
+
+  <div id="output"></div>
+
+  <canvas id="pieChart" width="100" height="100"></canvas>
+</div>
+<!-- <div class="results">
+    <h3>results</h3>
+    <h3>total Emi:<span class="Emi"></span></h3>
+    <h3>Total Interest:<span class="total"></span></h3>
+    <h3>Total amount: <span class="amount"></span></h3> -->
+    </div>
+
+<script>
+  function calculateEMI() {
+    const loanAmount = document.getElementById('loanAmount').value;
+    const interestRate = document.getElementById('interestRate').value;
+    const loanTenure = document.getElementById('loanTenure').value;
+    const isYears = document.getElementById('tenureYears').checked;
+
+    const principal = parseFloat(loanAmount);
+    const calculatedInterest = parseFloat(interestRate) / 100 / (isYears ? 12 : 1);
+    const calculatedPayments = parseFloat(loanTenure) * (isYears ? 12 : 1);
+
+    const x = Math.pow(1 + calculatedInterest, calculatedPayments);
+    const monthlyPayment = (principal * x * calculatedInterest) / (x - 1);
+
+    const outputElement = document.getElementById('output');
+    outputElement.innerHTML = `Monthly EMI: $${monthlyPayment.toFixed(2)}`;
+
+    // Pie chart data
+    const chartData = {
+      labels: ['Principal', 'Interest'],
+      datasets: [{
+        data: [principal, monthlyPayment * calculatedPayments - principal],
+        backgroundColor: ['#36A2EB', '#FFCE56'],
+        hoverBackgroundColor: ['#36A2EB', '#FFCE56']
+      }]
+    };
+
+    // Get the pie chart canvas
+    const pieChartCanvas = document.getElementById('pieChart');
+
+    // Create the pie chart
+    const pieChart = new Chart(pieChartCanvas, {
+      type: 'pie',
+      data: chartData
+    });
+  }
+</script>
+
+</body>
+</html>
